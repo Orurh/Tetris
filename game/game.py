@@ -1,6 +1,7 @@
 import arcade
 from .board import Board
 from .renderer import Renderer
+from .game_info import GameInfo
 import time
 from .settings import *
 
@@ -13,6 +14,7 @@ class Game(arcade.Window):
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
         self.board = Board(BOARD_WIDTH, BOARD_HEIGHT, BOARD_CELL_SIZE)
+        self.game_info = GameInfo(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.renderer = Renderer(self.board)
         self.speed = GAME_SPEED
         
@@ -21,6 +23,7 @@ class Game(arcade.Window):
         arcade.start_render()
         self.renderer.draw_board()
         self.renderer.draw_piece()
+        self.game_info.draw()
 
 
 
@@ -28,6 +31,8 @@ class Game(arcade.Window):
         self.board.update(delta_time)
         self.renderer.draw_board()
         self.renderer.draw_piece()
+        self.game_info.update_score(self.board.score)
+        self.game_info.update_level(self.board.score)
         time.sleep(0.0)
         
     def on_key_press(self, key, modifiers):
@@ -41,6 +46,9 @@ class Game(arcade.Window):
         elif key == arcade.key.DOWN:  # движение вниз
             if self.board.can_move(self.board.current_piece.shape, (1, 0)):
                 self.board.current_piece.position[0] += 1
+        elif key == arcade.key.SPACE:  # Падение
+            while self.board.can_move(self.board.current_piece.shape, (1, 0)):
+                self.board.current_piece.position[0] += 1        
         elif key == arcade.key.UP:  # Вращение
             # Запоминаем старую форму фигуры
             old_shape = self.board.current_piece.shape
