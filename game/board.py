@@ -3,7 +3,7 @@ from .pieces import Piece
 from .settings import *
 
 class Board:
-    def __init__(self, width, height, cell_size, line_color=(128, 128, 128), line_width=2):
+    def __init__(self, width, height, cell_size, line_color=(128, 128, 128), line_width=2, sounds = None):
         self.width = width
         self.height = height
         self.cell_size = cell_size
@@ -15,6 +15,8 @@ class Board:
         self.y = 0
         self.game_speed_timer = 0
         self.score = 0
+        self.game_speed = 1
+        self.sounds = sounds
         
     def check_full_rows(self):
         """Проверяет, есть ли заполненные строки, и удаляет их."""
@@ -26,6 +28,8 @@ class Board:
         if full_rows:
             self.remove_full_rows(full_rows)
             self.update_score(len(full_rows))
+            self.update_game_speed()
+            
 
     def remove_full_rows(self, rows):
         """Удаляет заполненные строки и сдвигает остальные строки вниз."""
@@ -40,7 +44,7 @@ class Board:
     def update(self, delta_time):
         self.game_speed_timer += delta_time
         # Проверяем, достаточно ли времени прошло для следующего движения вниз
-        if self.game_speed_timer >= 1 / GAME_SPEED:
+        if self.game_speed_timer >= 1 / (GAME_SPEED + self.game_speed):
             self.game_speed_timer = 0
             # Логика обновления игрового поля (движение вниз, проверка)
             if not self.can_move(self.current_piece.shape, (1, 0)):
@@ -51,6 +55,10 @@ class Board:
             else:
                 self.current_piece.position[0] += 1
             
+
+    def update_game_speed(self):
+        """Увеличивает скорость игры в зависимости от количества очков."""
+        self.game_speed = max(1, self.score // 5 + 1)
 
     def can_move(self, shape, offset):
         # Проверяем, может ли фигура сместиться в указанном направлении

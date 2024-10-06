@@ -1,4 +1,5 @@
 import arcade
+from arcade import sound
 from .board import Board
 from .renderer import Renderer
 from .game_info import GameInfo
@@ -17,6 +18,9 @@ class Game(arcade.Window):
         self.game_info = GameInfo(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.renderer = Renderer(self.board)
         self.speed = GAME_SPEED
+        # self.rotate_sound = sound.load_sound("sounds/rotate.wav")
+        # self.drop_sound = sound.load_sound("sounds/drop.wav")
+        # self.clear_line_sound = sound.load_sound("sounds/clear_line.wav")
         
     
     def on_draw(self):
@@ -32,7 +36,7 @@ class Game(arcade.Window):
         self.renderer.draw_board()
         self.renderer.draw_piece()
         self.game_info.update_score(self.board.score)
-        self.game_info.update_level(self.board.score)
+        self.game_info.update_level(self.board.game_speed)
         time.sleep(0.0)
         
     def on_key_press(self, key, modifiers):
@@ -48,7 +52,9 @@ class Game(arcade.Window):
                 self.board.current_piece.position[0] += 1
         elif key == arcade.key.SPACE:  # Падение
             while self.board.can_move(self.board.current_piece.shape, (1, 0)):
-                self.board.current_piece.position[0] += 1        
+                self.board.current_piece.position[0] += 1
+        elif key == arcade.key.ESCAPE:  # Выход
+            arcade.close_window()        
         elif key == arcade.key.UP:  # Вращение
             # Запоминаем старую форму фигуры
             old_shape = self.board.current_piece.shape
