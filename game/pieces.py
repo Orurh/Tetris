@@ -1,5 +1,4 @@
 import random
-import arcade
 
 SHAPES = [
     [[1, 1, 1, 1]],# I

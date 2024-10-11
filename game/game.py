@@ -18,9 +18,6 @@ class Game(arcade.Window):
         self.game_info = GameInfo(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.renderer = Renderer(self.board)
         self.speed = GAME_SPEED
-        # self.rotate_sound = sound.load_sound("sounds/rotate.wav")
-        # self.drop_sound = sound.load_sound("sounds/drop.wav")
-        # self.clear_line_sound = sound.load_sound("sounds/clear_line.wav")
         
     
     def on_draw(self):
@@ -64,4 +61,3 @@ class Game(arcade.Window):
             if not self.board.can_move(self.board.current_piece.shape, (0, 0)):
                 # Если нет, возвращаем старую форму фигуры
                 self.board.current_piece.shape = old_shape
-

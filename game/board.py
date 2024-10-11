@@ -58,15 +58,19 @@ class Board:
 
     def update_game_speed(self):
         """Увеличивает скорость игры в зависимости от количества очков."""
-        self.game_speed = max(1, self.score // 5 + 1)
+        self.game_speed = max(1, self.score // 100 + 1)
 
     def can_move(self, shape, offset):
         # Проверяем, может ли фигура сместиться в указанном направлении
         for i, row in enumerate(shape):
             for j, cell in enumerate(row):
                 if cell:
-                    x = self.current_piece.position[0] + offset[0] + i
-                    y = self.current_piece.position[1] + offset[1] + j
+                    if self.current_piece:
+                        x = self.current_piece.position[0] + offset[0] + i
+                        y = self.current_piece.position[1] + offset[1] + j
+                    else:
+                        x = offset[0] + i
+                        y = offset[1] + j
 
                     if x < 0 or x >= len(self.board) or y < 0 or y >= len(self.board[0]) or self.board[x][y]:
                         return False
@@ -81,6 +85,21 @@ class Board:
                     y = self.current_piece.position[1] + j
                     if x >= 0 and x < len(self.board) and y >= 0 and y < len(self.board[0]):
                         self.board[x][y] = 1  # Фиксируем фигуру на игровом поле
+
         self.check_full_rows()
-        self.current_piece = None
-                        
+        self.current_piece = None  # Сбрасываем текущую фигуру
+
+        # Создаем новую фигуру
+        new_piece = Piece()
+
+        # Проверяем, может ли новая фигура появиться на поле
+        if not self.can_move(new_piece.shape, (new_piece.position[0], new_piece.position[1])):
+            # Если новая фигура не может появиться, игра заканчивается
+            self.game_over()
+        else:
+            self.current_piece = new_piece
+
+            
+    def game_over(self):
+        # arcade.play_sound(self.sounds['game_over'])
+        arcade.exit()
